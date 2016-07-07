@@ -1,6 +1,4 @@
 #!/bin/bash
-#Test123
-
 processRoot() {
   if [ ! -d "$1" ]; then
     exit
