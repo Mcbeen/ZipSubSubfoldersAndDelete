@@ -1,18 +1,19 @@
 #!/bin/bash
 processRoot() {
   if [ ! -d "$1" ]; then
-    exit
+    exit 1
   fi
 
   cd $1
-  
-  for d in */; do 
-    zipAllFoldersInDir $d
+
+  for subDir in */; do
+    zipAllSubfoldersInDir "$1" "$subDir"
   done
 }
 
-zipAllFoldersInDir() {
-  for x in "${d%/}"/*; do
+zipAllSubfoldersInDir() {  
+  cd "$1$2"
+  for x in */; do
     if [ -d "$x" ]; then 
       echo "Zipping: $x"
       zip -rq "${x%/}.zip" "$x"
@@ -22,16 +23,22 @@ zipAllFoldersInDir() {
 }
 
 startScript () {
-  #Start the script
+  #Start the script  
   echo "Would you like to process the following directory?" 
   echo "Current directory is ($1)."
-  echo -n "Change if desired and/or press [ENTER]: "
+  echo "Change if desired and/or press [ENTER]: "
   read userDir
   echo ""
   echo "This script will zip all subdirectories and delete them."
   echo "Processing directory ($1)."
-  echo "Press [ENTER] to start: "
-  read 
+  echo -n "Press (y) to start: "
+  read resumeProcessing
+  
+  if [ ! "$resumeProcessing" = "y" ]; then
+    echo "Processing canceled! Exiting..."
+    echo ""
+    exit 1    
+  fi
 
   if [ "$userDir" = "" ]; then 
     processRoot $1
@@ -40,5 +47,10 @@ startScript () {
   fi
 }
 
-startScript $(pwd)
+if [ $1 = "" ]; then
+  startScript $(pwd)
+else
+  startScript $1
+fi
+
 exit 1
