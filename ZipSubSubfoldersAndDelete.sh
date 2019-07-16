@@ -1,3 +1,4 @@
+#test
 #!/bin/bash
 processRoot() {
   if [ ! -d "$1" ]; then
